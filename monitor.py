@@ -11,6 +11,7 @@
 
 import argparse
 import json
+import os
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -204,10 +205,22 @@ def main():
     history.setdefault("routes", {})
     cfg_settings = settings_module.load(cfg)
 
-    # 1. Забираем команды из Telegram и применяем их.
+    # 1. Команды из Telegram.
+    #
+    # Два пути. Если настроен вебхук, команда приходит в параметрах запуска
+    # workflow — опрашивать getUpdates бессмысленно, Telegram при активном
+    # вебхуке его отключает. Без вебхука работает обычный опрос.
     force_from_bot = False
+    webhook_command = os.environ.get("TELEGRAM_COMMAND", "").strip()
+
     if not args.no_bot:
-        changed, force_from_bot = bot.poll(cfg_settings, history, cfg)
+        if webhook_command:
+            log("команда получена через вебхук")
+            changed, force_from_bot = bot.handle_webhook_command(
+                webhook_command, os.environ.get("TELEGRAM_COMMAND_CHAT"),
+                cfg_settings, history, cfg)
+        else:
+            changed, force_from_bot = bot.poll(cfg_settings, history, cfg)
         if changed:
             settings_module.save(cfg_settings)
             log("настройки обновлены из Telegram")

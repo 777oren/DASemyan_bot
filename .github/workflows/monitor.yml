@@ -14,6 +14,16 @@ on:
         description: "Проверить и прислать цены, игнорируя интервал и пороги"
         type: boolean
         default: false
+      command:
+        description: "Команда из Telegram — заполняется воркером, вручную не нужно"
+        type: string
+        required: false
+        default: ""
+      chat_id:
+        description: "Отправитель команды — заполняется воркером"
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -63,6 +73,8 @@ jobs:
           TRAVELPAYOUTS_TOKEN: ${{ secrets.TRAVELPAYOUTS_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_COMMAND: ${{ inputs.command }}
+          TELEGRAM_COMMAND_CHAT: ${{ inputs.chat_id }}
         run: python monitor.py ${{ inputs.force && '--force' || '' }}
 
       - name: Save history and settings

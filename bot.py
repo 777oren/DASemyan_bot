@@ -429,6 +429,59 @@ def handle(text, settings, history, cfg):
     return None, False, False, None
 
 
+
+def process(text, settings, history, cfg):
+    """
+    Обрабатывает одно сообщение и отвечает на него.
+    Возвращает (настройки_изменились, запустить_проверку).
+
+    Вызывается из двух мест: из poll() при опросе getUpdates и напрямую
+    из monitor.py, когда команда пришла через вебхук в параметрах запуска.
+    """
+    log(f"команда: {text}")
+
+    # Одна сбойная команда не должна ронять весь запуск: проверка цен
+    # и уведомления важнее, чем ответ на конкретное сообщение.
+    try:
+        reply, did_change, run_now, keyboard = handle(text, settings, history, cfg)
+    except Exception as e:
+        log(f"ошибка при обработке команды {text!r}: {e}")
+        try:
+            tg.send(f"⚠️ Не смог обработать «{tg.escape(text)}»: {tg.escape(e)}\n\n"
+                    "Отправьте /help, чтобы увидеть список команд.",
+                    menu.reply_keyboard(menu.MAIN))
+        except Exception:
+            pass
+        return False, False
+
+    # К ответу на команду, которая что-то поменяла, подклеиваем сводку,
+    # чтобы состояние было видно сразу и не пришлось слать /status.
+    if reply and (did_change or run_now):
+        reply += "\n\n" + _fmt_brief(settings, cfg)
+
+    if reply:
+        try:
+            tg.send(reply, keyboard)
+        except Exception as e:
+            log(f"не удалось ответить: {e}")
+
+    return did_change, run_now
+
+
+def handle_webhook_command(text, sender, settings, history, cfg):
+    """
+    Команда, пришедшая через вебхук: её текст передан в параметрах запуска
+    workflow, а не получен опросом. Возвращает (изменено, проверить_сейчас).
+    """
+    owner = tg.chat_id()
+    if owner and str(sender or "").strip() != owner:
+        log(f"вебхук: команда от постороннего chat_id {sender}, игнорирую")
+        return False, False
+    if not (text or "").strip():
+        return False, False
+    return process(text.strip(), settings, history, cfg)
+
+
 def poll(settings, history, cfg):
     """Забирает и обрабатывает накопившиеся команды. Возвращает (изменено, проверить_сейчас)."""
     meta = history.setdefault("meta", {})
@@ -455,34 +508,8 @@ def poll(settings, history, cfg):
         if not text.strip():
             continue
 
-        log(f"команда: {text}")
-
-        # Одна сбойная команда не должна ронять весь запуск: проверка цен
-        # и уведомления важнее, чем ответ на конкретное сообщение.
-        try:
-            reply, did_change, run_now, keyboard = handle(text, settings, history, cfg)
-        except Exception as e:
-            log(f"ошибка при обработке команды {text!r}: {e}")
-            try:
-                tg.send(f"⚠️ Не смог обработать «{tg.escape(text)}»: {tg.escape(e)}\n\n"
-                        "Отправьте /help, чтобы увидеть список команд.",
-                        menu.reply_keyboard(menu.MAIN))
-            except Exception:
-                pass
-            continue
-
+        did_change, run_now = process(text, settings, history, cfg)
         changed = changed or did_change
         force_check = force_check or run_now
-
-        # К ответу на команду, которая что-то поменяла, подклеиваем сводку,
-        # чтобы состояние было видно сразу и не пришлось слать /status.
-        if reply and (did_change or run_now):
-            reply += "\n\n" + _fmt_brief(settings, cfg)
-
-        if reply:
-            try:
-                tg.send(reply, keyboard)
-            except Exception as e:
-                log(f"не удалось ответить: {e}")
 
     return changed, force_check
