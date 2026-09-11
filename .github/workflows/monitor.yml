@@ -67,10 +67,49 @@ jobs:
 
       - name: Save history and settings
         if: always()
+        continue-on-error: true
         run: |
+          set +e    # шаг не должен ронять запуск: уведомления важнее истории
+
           git config user.name "flight-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add history.json settings.json airports-db.json
-          git diff --staged --quiet || git commit -m "update $(date -u '+%Y-%m-%d %H:%M')"
-          git pull --rebase --autostash || true
-          git push
+
+          echo "=== состояние репозитория ==="
+          git status --short --branch
+          echo "ветка: ${GITHUB_REF_NAME}"
+
+          # Именно git add -A, а не перечисление файлов: settings.json и
+          # airports-db.json создаются не сразу, а git add на отсутствующий
+          # файл падает с кодом 128.
+          git add -A
+          if git diff --staged --quiet; then
+            echo "нечего сохранять, изменений нет"
+            exit 0
+          fi
+
+          git commit -m "update $(date -u '+%Y-%m-%d %H:%M')"
+          if [ $? -ne 0 ]; then
+            echo "!!! COMMIT НЕ ПРОШЁЛ (текст ошибки выше)"
+            exit 0
+          fi
+
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+
+          # HEAD:ветка работает и при detached HEAD после checkout.
+          echo "=== push ==="
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          code=$?
+
+          if [ $code -ne 0 ]; then
+            echo ""
+            echo "!!! PUSH НЕ ПРОШЁЛ, код $code. Текст ошибки — строкой выше."
+            echo ""
+            echo "Если написано 'Permission ... denied to github-actions[bot]':"
+            echo "  Settings -> Actions -> General -> Workflow permissions"
+            echo "  -> Read and write permissions -> Save"
+            echo ""
+            echo "Если 'protected branch' — Settings -> Branches, снять правило с main."
+          else
+            echo "история сохранена"
+          fi
+          exit 0
