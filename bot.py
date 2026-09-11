@@ -117,6 +117,41 @@ def route_title(route):
     return f"{arrow}, {dates}"
 
 
+
+def _plural(n, one, few, many):
+    if 11 <= n % 100 <= 14:
+        return many
+    return {1: one, 2: few, 3: few, 4: few}.get(n % 10, many)
+
+
+def _fmt_brief(settings, cfg):
+    """
+    Компактная сводка состояния. Подклеивается к ответу на любую команду,
+    которая что-то изменила, чтобы не приходилось спрашивать /status следом.
+    """
+    cur = (cfg.get("currency") or "eur").upper()
+    n = len(all_routes(settings, cfg))
+
+    drop = f"📉 {settings['drop_percent']:g}%"
+    top = (f"🎯 {settings['max_price']:g} {cur}"
+           if settings.get("max_price") is not None else "🎯 порога нет")
+    rise = (f"📈 {settings['rise_percent']:g}%"
+            if settings.get("rise_percent") else "📈 не следим")
+
+    routes = f"📋 {n} " + _plural(n, "маршрут", "маршрута", "маршрутов")
+    state = "⏸ пауза" if settings.get("paused") else "▶️ активно"
+    interval = f"⏱ {settings['check_interval_minutes']} мин"
+
+    on = [PROVIDERS[k]["title"] for k, v in (settings.get("sources") or {}).items()
+          if v and k in PROVIDERS]
+    sources = ", ".join(on) if on else "нет включённых"
+
+    return ("———\n"
+            f"{drop} · {top} · {rise}\n"
+            f"{interval} · {routes} · {state}\n"
+            f"Источники: {tg.escape(sources)}")
+
+
 def _fmt_routes(settings, cfg):
     routes = all_routes(settings, cfg)
     if not routes:
@@ -321,12 +356,12 @@ def handle(text, settings, history, cfg):
 
     if cmd == "/drop":
         if not args:
-            return f"Сейчас: {settings['drop_percent']}%. Пример: /drop 7", False, False, None
+            return f"Сейчас: {settings['drop_percent']:g}%. Пример: /drop 7", False, False, None
         value, ok = _parse_number(args[0])
         if not ok or not 0 < value <= 100:
             return "Нужно число от 0 до 100. Пример: /drop 7", False, False, None
         settings["drop_percent"] = value
-        return f"✅ Уведомлять при падении на {value}%", True, False, None
+        return f"✅ Уведомлять при падении на {value:g}%", True, False, None
 
     if cmd == "/max":
         if not args:
@@ -336,7 +371,7 @@ def handle(text, settings, history, cfg):
             return "Нужно число или off. Пример: /max 350", False, False, None
         settings["max_price"] = value
         return ("✅ Абсолютный порог убран" if value is None
-                else f"✅ Уведомлять при цене ниже {value}"), True, False, None
+                else f"✅ Уведомлять при цене ниже {value:g}"), True, False, None
 
     if cmd == "/rise":
         if not args:
@@ -346,7 +381,7 @@ def handle(text, settings, history, cfg):
             return "Нужно число или off. Пример: /rise 15", False, False, None
         settings["rise_percent"] = value
         return ("✅ Предупреждения о росте выключены" if value is None
-                else f"✅ Предупреждать о росте на {value}%"), True, False, None
+                else f"✅ Предупреждать о росте на {value:g}%"), True, False, None
 
     if cmd == "/freq":
         if not args:
@@ -420,6 +455,12 @@ def poll(settings, history, cfg):
         reply, did_change, run_now, keyboard = handle(text, settings, history, cfg)
         changed = changed or did_change
         force_check = force_check or run_now
+
+        # К ответу на команду, которая что-то поменяла, подклеиваем сводку,
+        # чтобы состояние было видно сразу и не пришлось слать /status.
+        if reply and (did_change or run_now):
+            reply += "\n\n" + _fmt_brief(settings, cfg)
+
         if reply:
             try:
                 tg.send(reply, keyboard)
