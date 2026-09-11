@@ -54,6 +54,12 @@
       "destination": "CIA",
       "one_way": true,
       "origin": "SAW"
+    },
+    {
+      "departure_at": "2026-10-19",
+      "destination": "SAW",
+      "one_way": true,
+      "origin": "LED"
     }
   ],
   "sources": {
