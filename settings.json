@@ -18,6 +18,12 @@
       "one_way": false,
       "origin": "LED",
       "return_at": "2026-11-11"
+    },
+    {
+      "departure_at": "2026-10-20",
+      "destination": "BGY",
+      "one_way": true,
+      "origin": "SAW"
     }
   ],
   "sources": {
