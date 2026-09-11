@@ -456,7 +456,21 @@ def poll(settings, history, cfg):
             continue
 
         log(f"команда: {text}")
-        reply, did_change, run_now, keyboard = handle(text, settings, history, cfg)
+
+        # Одна сбойная команда не должна ронять весь запуск: проверка цен
+        # и уведомления важнее, чем ответ на конкретное сообщение.
+        try:
+            reply, did_change, run_now, keyboard = handle(text, settings, history, cfg)
+        except Exception as e:
+            log(f"ошибка при обработке команды {text!r}: {e}")
+            try:
+                tg.send(f"⚠️ Не смог обработать «{tg.escape(text)}»: {tg.escape(e)}\n\n"
+                        "Отправьте /help, чтобы увидеть список команд.",
+                        menu.reply_keyboard(menu.MAIN))
+            except Exception:
+                pass
+            continue
+
         changed = changed or did_change
         force_check = force_check or run_now
 
