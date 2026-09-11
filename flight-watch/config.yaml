@@ -1,0 +1,67 @@
+# ============================================================
+#  Статичные настройки. Пороги и частоту удобнее менять из бота
+#  (/drop, /max, /freq...) — они сохраняются в settings.json
+#  и имеют приоритет над значениями отсюда.
+# ============================================================
+
+currency: eur
+market: ru          # кэш какого сайта Aviasales брать: ru, us, tr, nl...
+
+# Стартовые значения. После первой команды из Telegram они больше не читаются.
+alerts:
+  drop_percent: 5           # уведомить при падении цены на столько %
+  max_price: 400            # уведомить при любой цене ниже; null — выключить
+  rise_percent: 15          # предупредить о росте; null — выключить
+  check_interval_minutes: 60   # как часто реально проверять цены
+  paused: false
+
+# Какие источники опрашивать.
+# travelpayouts работает сразу. pegasus и ajet — скраперы сайтов авиакомпаний,
+# их нужно откалибровать (python calibrate.py pegasus), см. README.
+sources:
+  travelpayouts: true
+  pegasus: false
+  ajet: false
+
+routes:
+  - name: "Амстердам → Стамбул, февраль"
+    origin: AMS
+    destination: IST          # SAW — Сабиха Гёкчен, база Pegasus и AJet
+    departure_at: "2027-02-14"
+    return_at: "2027-02-28"
+    one_way: false
+    direct: false
+
+    # Следить только за этими перевозчиками (IATA-коды):
+    #   PC — Pegasus Airlines
+    #   VF — AJet (до 2024 года летал под кодом TK)
+    # Уберите или закомментируйте, чтобы следить за всеми.
+    airlines: [PC, VF]
+
+    # exclude_airlines: [SU]          # наоборот, исключить
+    # max_transfers: 1
+    # max_duration_minutes: 1800
+    # sources: [travelpayouts]        # ограничить источники для этого маршрута
+
+# ------------------------------------------------------------
+#  Скраперы сайтов авиакомпаний.
+#  Заполняется автоматически: python calibrate.py pegasus
+# ------------------------------------------------------------
+scrapers:
+  pegasus:
+    airline_code: PC
+    # url_template: "https://www.flypgs.com/en/..."
+    # json_url_contains: ""
+    wait_ms: 15000
+    locale: en-US
+    timezone: Europe/Istanbul
+    min_price: 10
+
+  ajet:
+    airline_code: VF
+    # url_template: "https://www.ajet.com/en/..."
+    # json_url_contains: ""
+    wait_ms: 15000
+    locale: en-US
+    timezone: Europe/Istanbul
+    min_price: 10
