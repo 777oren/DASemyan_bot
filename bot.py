@@ -10,6 +10,7 @@ GitHub Actions не может держать бота онлайн постоя
 import re
 from datetime import date, datetime
 
+import menu
 import tg
 from providers import PROVIDERS, airports
 from providers.base import log
@@ -239,46 +240,54 @@ def _parse_number(arg, allow_off=False):
 
 
 def handle(text, settings, history, cfg):
-    """Возвращает (ответ_строкой, настройки_изменились, запустить_проверку)."""
+    """Возвращает (ответ, настройки_изменились, запустить_проверку, клавиатура)."""
+    # Нажатие кнопки приходит обычным текстом — переводим его в команду
+    # либо показываем подменю.
+    command, keyboard, canned = menu.resolve(text)
+    if canned is not None:
+        return canned, False, False, keyboard
+    if command:
+        text = command
+
     parts = text.strip().split()
     if not parts:
-        return None, False, False
+        return None, False, False, None
 
     cmd = parts[0].lower().split("@")[0]
     args = parts[1:]
 
     if cmd in ("/start", "/help"):
-        return HELP, False, False
+        return HELP, False, False, menu.reply_keyboard(menu.MAIN)
 
     if cmd == "/status":
-        return _fmt_settings(settings, cfg) + "\n" + _fmt_prices(history, cfg), False, False
+        return _fmt_settings(settings, cfg) + "\n" + _fmt_prices(history, cfg), False, False, None
 
     if cmd == "/check":
-        return "Проверяю цены…", False, True
+        return "Проверяю цены…", False, True, None
 
     if cmd == "/routes":
-        return _fmt_routes(settings, cfg), False, False
+        return _fmt_routes(settings, cfg), False, False, None
 
     if cmd == "/find":
         if not args:
-            return "Пример: /find амстердам", False, False
+            return "Пример: /find амстердам", False, False, None
         hits = airports.search(" ".join(args))
         if not hits:
             data = airports.db()
             if data is None:
                 return ("Справочник аэропортов недоступен — не удалось его скачать. "
-                        "Код можно указать вручную, он проверяется по формату."), False, False
-            return "Ничего не нашлось. Попробуйте другое написание.", False, False
+                        "Код можно указать вручную, он проверяется по формату."), False, False, None
+            return "Ничего не нашлось. Попробуйте другое написание.", False, False, None
         lines = ["<b>Найдено</b>", ""]
         lines += [tg.escape(airports.describe(c)) for c in hits]
         lines.append("")
         lines.append("Коды городов обычно дают больше вариантов, чем коды аэропортов.")
-        return "\n".join(lines), False, False
+        return "\n".join(lines), False, False, None
 
     if cmd == "/add":
         route, error = parse_add(args, settings)
         if error:
-            return error, False, False
+            return error, False, False, None
         settings.setdefault("routes", []).append(route)
         reply = [f"✅ Маршрут добавлен: <b>{tg.escape(route_title(route))}</b>", ""]
         reply.append(tg.escape(airports.describe(route["origin"])))
@@ -287,88 +296,88 @@ def handle(text, settings, history, cfg):
             reply.append("Только авиакомпании: " + ", ".join(route["airlines"]))
         reply.append("")
         reply.append("Проверю его при следующем запуске. /check — прямо сейчас.")
-        return "\n".join(reply), True, False
+        return "\n".join(reply), True, False, None
 
     if cmd in ("/del", "/delete", "/rm"):
         routes = all_routes(settings, cfg)
         if not args:
-            return _fmt_routes(settings, cfg) + "\n\nУкажите номер: /del 2", False, False
+            return _fmt_routes(settings, cfg) + "\n\nУкажите номер: /del 2", False, False, None
         try:
             index = int(args[0])
         except ValueError:
-            return "Нужен номер маршрута из /routes. Пример: /del 2", False, False
+            return "Нужен номер маршрута из /routes. Пример: /del 2", False, False, None
         if not 1 <= index <= len(routes):
-            return f"Нет маршрута с номером {index}. Всего их {len(routes)}.", False, False
+            return f"Нет маршрута с номером {index}. Всего их {len(routes)}.", False, False, None
 
         target = routes[index - 1]
         if target.get("_locked"):
             return ("🔒 Этот маршрут задан в config.yaml, из чата его не удалить — "
-                    "уберите его из файла в репозитории."), False, False
+                    "уберите его из файла в репозитории."), False, False, None
 
         added = settings.get("routes") or []
         position = index - 1 - (len(routes) - len(added))
         removed = added.pop(position)
-        return f"🗑 Удалён: <b>{tg.escape(route_title(removed))}</b>", True, False
+        return f"🗑 Удалён: <b>{tg.escape(route_title(removed))}</b>", True, False, None
 
     if cmd == "/drop":
         if not args:
-            return f"Сейчас: {settings['drop_percent']}%. Пример: /drop 7", False, False
+            return f"Сейчас: {settings['drop_percent']}%. Пример: /drop 7", False, False, None
         value, ok = _parse_number(args[0])
         if not ok or not 0 < value <= 100:
-            return "Нужно число от 0 до 100. Пример: /drop 7", False, False
+            return "Нужно число от 0 до 100. Пример: /drop 7", False, False, None
         settings["drop_percent"] = value
-        return f"✅ Уведомлять при падении на {value}%", True, False
+        return f"✅ Уведомлять при падении на {value}%", True, False, None
 
     if cmd == "/max":
         if not args:
-            return "Пример: /max 350 или /max off", False, False
+            return "Пример: /max 350 или /max off", False, False, None
         value, ok = _parse_number(args[0], allow_off=True)
         if not ok:
-            return "Нужно число или off. Пример: /max 350", False, False
+            return "Нужно число или off. Пример: /max 350", False, False, None
         settings["max_price"] = value
         return ("✅ Абсолютный порог убран" if value is None
-                else f"✅ Уведомлять при цене ниже {value}"), True, False
+                else f"✅ Уведомлять при цене ниже {value}"), True, False, None
 
     if cmd == "/rise":
         if not args:
-            return "Пример: /rise 15 или /rise off", False, False
+            return "Пример: /rise 15 или /rise off", False, False, None
         value, ok = _parse_number(args[0], allow_off=True)
         if not ok:
-            return "Нужно число или off. Пример: /rise 15", False, False
+            return "Нужно число или off. Пример: /rise 15", False, False, None
         settings["rise_percent"] = value
         return ("✅ Предупреждения о росте выключены" if value is None
-                else f"✅ Предупреждать о росте на {value}%"), True, False
+                else f"✅ Предупреждать о росте на {value}%"), True, False, None
 
     if cmd == "/freq":
         if not args:
             return (f"Сейчас: раз в {settings['check_interval_minutes']} мин. "
-                    "Пример: /freq 180"), False, False
+                    "Пример: /freq 180"), False, False, None
         value, ok = _parse_number(args[0])
         if not ok or value < 1:
-            return "Нужно число минут. Пример: /freq 180", False, False
+            return "Нужно число минут. Пример: /freq 180", False, False, None
         settings["check_interval_minutes"] = int(value)
         note = ""
         if value < 30:
             note = ("\n\n⚠️ Реальная частота ограничена расписанием workflow "
                     "(по умолчанию раз в 30 минут). Чтобы проверять чаще, "
                     "поменяйте cron в .github/workflows/monitor.yml")
-        return f"✅ Проверка раз в {int(value)} мин{note}", True, False
+        return f"✅ Проверка раз в {int(value)} мин{note}", True, False, None
 
     if cmd == "/pause":
         settings["paused"] = True
-        return "⏸ Слежение приостановлено. /resume — возобновить", True, False
+        return "⏸ Слежение приостановлено. /resume — возобновить", True, False, None
 
     if cmd == "/resume":
         settings["paused"] = False
-        return "▶️ Слежение возобновлено", True, False
+        return "▶️ Слежение возобновлено", True, False, None
 
     if cmd in ("/source", "/sources"):
         if len(args) < 2:
             return (_fmt_settings(settings, cfg) +
-                    "\n\nПример: /source pegasus on"), False, False
+                    "\n\nПример: /source pegasus on"), False, False, None
         name = args[0].lower()
         if name not in PROVIDERS:
-            return f"Неизвестный источник. Доступны: {', '.join(PROVIDERS)}", False, False
+            return f"Неизвестный источник. Доступны: {', '.join(PROVIDERS)}", False, False, None
         on = args[1].lower() in ("on", "1", "true", "вкл", "да")
         settings["sources"][name] = on
         extra = ""
@@ -376,9 +385,9 @@ def handle(text, settings, history, cfg):
             extra = ("\n\n⚠️ Это скрапер сайта авиакомпании. Убедитесь, что "
                      f"в config.yaml заполнен блок scrapers.{name} — иначе "
                      "источник будет отваливаться с ошибкой.")
-        return f"✅ Источник {name}: {'включён' if on else 'выключен'}{extra}", True, False
+        return f"✅ Источник {name}: {'включён' if on else 'выключен'}{extra}", True, False, None
 
-    return None, False, False
+    return None, False, False, None
 
 
 def poll(settings, history, cfg):
@@ -404,16 +413,16 @@ def poll(settings, history, cfg):
         if owner and sender != owner:
             log(f"игнорирую сообщение от постороннего chat_id {sender}")
             continue
-        if not text.startswith("/"):
+        if not text.strip():
             continue
 
         log(f"команда: {text}")
-        reply, did_change, run_now = handle(text, settings, history, cfg)
+        reply, did_change, run_now, keyboard = handle(text, settings, history, cfg)
         changed = changed or did_change
         force_check = force_check or run_now
         if reply:
             try:
-                tg.send(reply)
+                tg.send(reply, keyboard)
             except Exception as e:
                 log(f"не удалось ответить: {e}")
 

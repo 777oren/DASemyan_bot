@@ -16,7 +16,10 @@ def _token():
 
 
 def chat_id():
-    return str(os.environ.get("TELEGRAM_CHAT_ID") or "")
+    # .strip() не для красоты: при копировании chat_id в секрет GitHub
+    # в конец часто попадает пробел или перенос строки, и тогда сравнение
+    # с отправителем не совпадает, а команды молча игнорируются.
+    return str(os.environ.get("TELEGRAM_CHAT_ID") or "").strip()
 
 
 def configured():
@@ -35,19 +38,23 @@ def escape(s):
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def send(text):
+def send(text, keyboard=None):
     if DRY_RUN:
-        print("\n--- TELEGRAM (dry-run) ---\n" + text + "\n--------------------------\n")
+        mark = " + клавиатура" if keyboard else ""
+        print(f"\n--- TELEGRAM (dry-run){mark} ---\n" + text + "\n--------------------------\n")
         return True
     if not configured():
         log("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID не заданы — отправка пропущена")
         return False
-    result = _call("sendMessage", {
+    params = {
         "chat_id": chat_id(),
         "text": text,
         "parse_mode": "HTML",
         "disable_web_page_preview": "true",
-    })
+    }
+    if keyboard:
+        params["reply_markup"] = json.dumps(keyboard)
+    result = _call("sendMessage", params)
     if not result.get("ok"):
         log(f"Telegram вернул ошибку: {result}")
         return False
