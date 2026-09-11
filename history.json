@@ -1,4 +1,26 @@
 {
-  "meta": {},
-  "routes": {}
+  "meta": {
+    "last_check_at": "2026-09-11T11:36:06+00:00"
+  },
+  "routes": {
+    "LED-BGY-2026-10-20-2026-11-11": {
+      "best_price": 484,
+      "last_notified_at": "2026-09-11T11:36:06+00:00",
+      "last_notified_price": 484,
+      "name": "LED → BGY, 2026-10-20 — 2026-11-11",
+      "points": [
+        {
+          "airline": "VF",
+          "departure_at": "2026-10-20T06:20:00+03:00",
+          "per_source": {
+            "travelpayouts": 484
+          },
+          "price": 484,
+          "source": "travelpayouts",
+          "transfers": 1,
+          "ts": "2026-09-11T11:36:06+00:00"
+        }
+      ]
+    }
+  }
 }

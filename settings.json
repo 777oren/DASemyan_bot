@@ -1,0 +1,21 @@
+{
+  "check_interval_minutes": 60,
+  "drop_percent": 5,
+  "max_price": 400,
+  "paused": false,
+  "rise_percent": 15,
+  "routes": [
+    {
+      "departure_at": "2026-10-20",
+      "destination": "BGY",
+      "one_way": false,
+      "origin": "LED",
+      "return_at": "2026-11-11"
+    }
+  ],
+  "sources": {
+    "ajet": false,
+    "pegasus": false,
+    "travelpayouts": true
+  }
+}
