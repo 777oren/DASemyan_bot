@@ -48,6 +48,12 @@
       "destination": "MXP",
       "one_way": true,
       "origin": "SAW"
+    },
+    {
+      "departure_at": "2026-10-21",
+      "destination": "CIA",
+      "one_way": true,
+      "origin": "SAW"
     }
   ],
   "sources": {
