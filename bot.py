@@ -155,7 +155,10 @@ def _fmt_brief(settings, cfg):
 def _fmt_routes(settings, cfg):
     routes = all_routes(settings, cfg)
     if not routes:
-        return "Маршрутов пока нет.\n\nДобавьте: /add AMS SAW 2027-02-14 2027-02-28"
+        return ("Маршрутов пока нет.\n\n"
+                "Добавьте: <code>/add AMS SAW 2027-02-14 2027-02-28</code>\n"
+                "откуда · куда · туда · обратно\n\n"
+                "Не знаете код аэропорта — отправьте <code>/find стамбул</code>")
 
     lines = ["<b>Отслеживаемые маршруты</b>", ""]
     for i, r in enumerate(routes, 1):
@@ -174,8 +177,9 @@ def _fmt_routes(settings, cfg):
             lines.append("    " + tg.escape("; ".join(extra)))
         lines.append("")
 
-    lines.append("🔒 — задан в config.yaml, из чата не удаляется")
-    lines.append("Удалить: /del 2")
+    if any(r.get("_locked") for r in routes):
+        lines.append("🔒 — задан в config.yaml, из чата не удаляется")
+    lines.append("Удалить: /del 2 · Добавить: /add AMS SAW 2027-02-14 2027-02-28")
     return "\n".join(lines)
 
 
