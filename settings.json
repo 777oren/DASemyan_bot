@@ -115,6 +115,12 @@
       "one_way": false,
       "origin": "LED",
       "return_at": "2026-11-12"
+    },
+    {
+      "departure_at": "2026-11-05",
+      "destination": "OPO",
+      "one_way": true,
+      "origin": "ORY"
     }
   ],
   "sources": {
