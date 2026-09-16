@@ -2,7 +2,7 @@
   "check_interval_minutes": 60,
   "drop_percent": 5,
   "max_price": 400,
-  "paused": true,
+  "paused": false,
   "rise_percent": 15,
   "routes": [
     {
