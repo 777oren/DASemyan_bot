@@ -121,6 +121,12 @@
       "destination": "OPO",
       "one_way": true,
       "origin": "ORY"
+    },
+    {
+      "departure_at": "2026-11-10",
+      "destination": "MXP",
+      "one_way": true,
+      "origin": "OPO"
     }
   ],
   "sources": {
