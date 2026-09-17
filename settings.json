@@ -6,12 +6,6 @@
   "rise_percent": 15,
   "routes": [
     {
-      "departure_at": "2026-10-20",
-      "destination": "FCO",
-      "one_way": true,
-      "origin": "SAW"
-    },
-    {
       "departure_at": "2026-10-21",
       "destination": "BGY",
       "one_way": true,
