@@ -4,7 +4,14 @@
   "max_price": 400,
   "paused": false,
   "rise_percent": 15,
-  "routes": [],
+  "routes": [
+    {
+      "departure_at": "2026-11-05",
+      "destination": "OPO",
+      "one_way": true,
+      "origin": "ORY"
+    }
+  ],
   "sources": {
     "ajet": false,
     "pegasus": false,
