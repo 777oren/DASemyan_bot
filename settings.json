@@ -6,12 +6,6 @@
   "rise_percent": 15,
   "routes": [
     {
-      "departure_at": "2026-10-20",
-      "destination": "SAW",
-      "one_way": true,
-      "origin": "LED"
-    },
-    {
       "departure_at": "2026-11-11",
       "destination": "SAW",
       "one_way": true,
