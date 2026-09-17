@@ -14,12 +14,6 @@
     },
     {
       "departure_at": "2026-10-20",
-      "destination": "BGY",
-      "one_way": true,
-      "origin": "SAW"
-    },
-    {
-      "departure_at": "2026-10-20",
       "destination": "MXP",
       "one_way": true,
       "origin": "SAW"
