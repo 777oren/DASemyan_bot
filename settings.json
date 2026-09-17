@@ -6,13 +6,6 @@
   "rise_percent": 15,
   "routes": [
     {
-      "departure_at": "2026-10-20",
-      "destination": "BGY",
-      "one_way": false,
-      "origin": "LED",
-      "return_at": "2026-11-11"
-    },
-    {
       "departure_at": "2026-10-21",
       "destination": "BGY",
       "one_way": false,
