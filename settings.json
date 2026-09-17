@@ -3,7 +3,7 @@
   "drop_percent": 5,
   "max_price": 400,
   "paused": false,
-  "rise_percent": 15,
+  "rise_percent": 5.0,
   "routes": [
     {
       "departure_at": "2026-11-05",
