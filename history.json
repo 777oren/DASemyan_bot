@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_check_at": "2026-09-18T15:55:43+00:00"
+    "last_check_at": "2026-09-18T19:10:25+00:00"
   },
   "routes": {
     "BGY-LED-2026-11-10-oneway": {
@@ -4939,6 +4939,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-18T15:55:43+00:00"
+        },
+        {
+          "airline": "FR",
+          "departure_at": "2026-11-10T06:55:00Z",
+          "per_source": {
+            "travelpayouts": 31
+          },
+          "price": 31,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-18T19:10:25+00:00"
         }
       ]
     },
@@ -5101,6 +5112,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-18T15:55:43+00:00"
+        },
+        {
+          "airline": "W4",
+          "departure_at": "2026-11-11T19:55:00Z",
+          "per_source": {
+            "travelpayouts": 22
+          },
+          "price": 22,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-18T19:10:25+00:00"
         }
       ]
     },
@@ -5340,6 +5362,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-18T15:55:43+00:00"
+        },
+        {
+          "airline": "TO",
+          "departure_at": "2026-11-05T14:55:00+01:00",
+          "per_source": {
+            "travelpayouts": 55
+          },
+          "price": 55,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-18T19:10:25+00:00"
         }
       ]
     },
