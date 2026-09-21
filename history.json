@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_check_at": "2026-09-21T11:15:21+00:00"
+    "last_check_at": "2026-09-21T15:04:24+00:00"
   },
   "routes": {
     "BGY-LED-2026-11-10-oneway": {
@@ -5181,6 +5181,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-21T11:15:21+00:00"
+        },
+        {
+          "airline": "FR",
+          "departure_at": "2026-11-10T06:55:00Z",
+          "per_source": {
+            "travelpayouts": 30
+          },
+          "price": 30,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-21T15:04:24+00:00"
         }
       ]
     },
@@ -5585,13 +5596,24 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-21T11:15:21+00:00"
+        },
+        {
+          "airline": "W4",
+          "departure_at": "2026-11-11T19:55:00Z",
+          "per_source": {
+            "travelpayouts": 22
+          },
+          "price": 22,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-21T15:04:24+00:00"
         }
       ]
     },
     "ORY-OPO-2026-11-05-oneway": {
       "best_price": 55,
-      "last_notified_at": "2026-09-21T11:15:21+00:00",
-      "last_notified_price": 58,
+      "last_notified_at": "2026-09-21T15:04:24+00:00",
+      "last_notified_price": 55,
       "name": "ORY → OPO, 2026-11-05",
       "points": [
         {
@@ -6066,6 +6088,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-21T11:15:21+00:00"
+        },
+        {
+          "airline": "TO",
+          "departure_at": "2026-11-05T12:35:00+01:00",
+          "per_source": {
+            "travelpayouts": 55
+          },
+          "price": 55,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-21T15:04:24+00:00"
         }
       ]
     },
