@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_check_at": "2026-09-29T16:28:59+00:00"
+    "last_check_at": "2026-09-29T21:01:09+00:00"
   },
   "routes": {
     "BGY-LED-2026-11-10-oneway": {
@@ -5819,13 +5819,24 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-29T16:28:59+00:00"
+        },
+        {
+          "airline": "FR",
+          "departure_at": "2026-11-10T06:55:00Z",
+          "per_source": {
+            "travelpayouts": 31
+          },
+          "price": 31,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-29T21:01:09+00:00"
         }
       ]
     },
     "OPO-MXP-2026-11-11-oneway": {
       "best_price": 22,
-      "last_notified_at": "2026-09-29T05:59:59+00:00",
-      "last_notified_price": 27,
+      "last_notified_at": "2026-09-29T21:01:09+00:00",
+      "last_notified_price": 26,
       "name": "OPO → MXP, 2026-11-11",
       "points": [
         {
@@ -6861,6 +6872,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-29T16:28:59+00:00"
+        },
+        {
+          "airline": "W4",
+          "departure_at": "2026-11-11T19:55:00Z",
+          "per_source": {
+            "travelpayouts": 26
+          },
+          "price": 26,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-29T21:01:09+00:00"
         }
       ]
     },
@@ -7980,6 +8002,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-29T16:28:59+00:00"
+        },
+        {
+          "airline": "TO",
+          "departure_at": "2026-11-05T06:15:00+01:00",
+          "per_source": {
+            "travelpayouts": 53
+          },
+          "price": 53,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-29T21:01:09+00:00"
         }
       ]
     },
