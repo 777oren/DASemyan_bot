@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_check_at": "2026-09-30T00:22:43+00:00"
+    "last_check_at": "2026-09-30T05:21:51+00:00"
   },
   "routes": {
     "BGY-LED-2026-11-10-oneway": {
@@ -4738,8 +4738,8 @@
     },
     "OPO-MXP-2026-11-10-oneway": {
       "best_price": 23,
-      "last_notified_at": "2026-09-29T16:28:59+00:00",
-      "last_notified_price": 31,
+      "last_notified_at": "2026-09-30T05:21:51+00:00",
+      "last_notified_price": 32,
       "name": "OPO → MXP, 2026-11-10",
       "points": [
         {
@@ -5841,13 +5841,24 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-30T00:22:43+00:00"
+        },
+        {
+          "airline": "FR",
+          "departure_at": "2026-11-10T06:55:00Z",
+          "per_source": {
+            "travelpayouts": 32
+          },
+          "price": 32,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-30T05:21:51+00:00"
         }
       ]
     },
     "OPO-MXP-2026-11-11-oneway": {
       "best_price": 22,
-      "last_notified_at": "2026-09-29T21:01:09+00:00",
-      "last_notified_price": 26,
+      "last_notified_at": "2026-09-30T05:21:51+00:00",
+      "last_notified_price": 22,
       "name": "OPO → MXP, 2026-11-11",
       "points": [
         {
@@ -6905,12 +6916,23 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-30T00:22:43+00:00"
+        },
+        {
+          "airline": "W4",
+          "departure_at": "2026-11-11T19:55:00Z",
+          "per_source": {
+            "travelpayouts": 22
+          },
+          "price": 22,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-30T05:21:51+00:00"
         }
       ]
     },
     "ORY-OPO-2026-11-05-oneway": {
       "best_price": 51,
-      "last_notified_at": "2026-09-29T05:59:59+00:00",
+      "last_notified_at": "2026-09-30T05:21:51+00:00",
       "last_notified_price": 53,
       "name": "ORY → OPO, 2026-11-05",
       "points": [
@@ -8046,6 +8068,17 @@
           "source": "travelpayouts",
           "transfers": 0,
           "ts": "2026-09-30T00:22:43+00:00"
+        },
+        {
+          "airline": "TO",
+          "departure_at": "2026-11-05T06:15:00+01:00",
+          "per_source": {
+            "travelpayouts": 53
+          },
+          "price": 53,
+          "source": "travelpayouts",
+          "transfers": 0,
+          "ts": "2026-09-30T05:21:51+00:00"
         }
       ]
     },
